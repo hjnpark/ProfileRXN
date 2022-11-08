@@ -18,10 +18,10 @@ import json
 def check_record(record):
     status = record.status.split(".")[-1]
     if status != "complete":
-        print(record.stdout)
+        print(record)
         print(record.error)
         raise RuntimeError(
-            "Failed task detected. See the printed stdout and error message above."
+            "Failed task detected. See the printed error message above."
         )
 
 
@@ -81,8 +81,18 @@ class ProfileRXN:
         _, ids = self.client.add_optimizations([reac, prod], **opt_spec)
         self.s.await_results()
         opt_recs = self.client.get_optimizations(ids)
-        for rec in opt_recs:
+        self.opt_dir = os.path.join(self.dir, "optimization_records")
+
+        if not os.path.exists(self.opt_dir):
+            os.makedirs(self.opt_dir)
+
+        for i, rec in enumerate(opt_recs):
             check_record(rec)
+            opt_output = open(os.path.join(self.opt_dir, "optimization_%i.out" %i), "w")
+            opt_output.write(rec.stdout)
+            opt_output.close()
+
+
         M.xyzs[0] = np.round(opt_recs[0].final_molecule.geometry / ang2bohr, 8)
         M.xyzs[-1] = np.round(opt_recs[-1].final_molecule.geometry / ang2bohr, 8)
 
@@ -314,6 +324,10 @@ class ProfileRXN:
         neb_rec = self.client.get_nebs(neb_id[0])
 
         check_record(neb_rec)
+
+        TS_output = open(os.path.join(self.opt_dir, "optimization_TS.out"), "w")
+        TS_output.write(neb_rec.ts_optimization.stdout)
+        TS_output.close()
 
         neb_dir = os.path.join(self.dir, "neb_result")
         if not os.path.exists(neb_dir):

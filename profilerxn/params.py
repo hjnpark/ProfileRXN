@@ -15,6 +15,11 @@ class Params:
         self.workers = kwargs.get("workers", 2)
         self.equal_space = kwargs.get("equal_space", False)
         self.engine = kwargs.get("engine", "psi4")
+        sp_kwd_list = kwargs.get("singlepoint_keywords", [])
+        if len(sp_kwd_list) % 2 != 0:
+            raise RuntimeError("Please check the keywords for singlepoint calculations")
+        self.sp_kwd = {sp_kwd_list[i]: sp_kwd_list[i+1] for i in range(0, len(sp_kwd_list),2)}
+
         if self.coordsys not in coordsys_list:
             raise RuntimeError(
                 "%s coordinate system is not available. Available coordinate systems: tric, cart, prim, dlc, hdlc"
@@ -26,6 +31,7 @@ class Params:
             "driver": "gradient",
             "method": self.method,
             "basis": self.basis,
+            "keywords": self.sp_kwd
         }
 
 def str2bool(v):
@@ -71,6 +77,7 @@ def parse_args(*args):
     )
     parser.add_argument('--equal_space', type=str2bool,
                           help='Provide "yes" to space between frames equally at the end of the interpolation.\n')
+    parser.add_argument('--singlepoint_keywords', nargs="+", help="QC Software specific keywords. i.e. --singlepoint_keywords key1 value1 key2 value2...")
     parser.add_argument(
         "--workers", type=int, help="Number of cores to be assigned to Psi4"
     )
