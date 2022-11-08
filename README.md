@@ -48,7 +48,6 @@ Done!
 `profile-rxn -h` will show all the available arguments. Input xyz file should have two geometries. If it has more than two, the first and last frame will be used.
 `exmaples/bash.sh` shows an example command.
 
-##TO DO
+## TO DO
 1. Perform vibrational frequency analysis and calculate Gibbs free energies.
-2. IRC step needs to be added. ls
-3. 
+2. IRC step needs to be added.
