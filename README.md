@@ -13,7 +13,7 @@ Commands below will create a conda environment and install ProfileRXN.
 git clone git@github.com:hjnpark/ProfileRXN
 cd ProfileRXN
 conda update conda
-conda env create -f ProfileRXN_env.yml
+conda env create -f ProfileRXN_env.yaml
 conda activate ProfileRXN
 pip install -e .
 ```
