@@ -1,0 +1,28 @@
+name: ProfileRXN
+channels:
+  - defaults
+  - psi4/label/dev
+  - conda-forge
+  - anaconda
+
+dependencies:
+  - pip
+  - numpy
+  - qcelemental
+  - qcengine
+  - postgresql
+
+  # Storage dependencies
+  - sqlalchemy >=1.4
+  - alembic
+  - psycopg2
+
+  - psi4
+
+  # QCPortal dependencies
+  - tqdm
+  - pandas
+
+
+
+                
