@@ -17,7 +17,7 @@ conda env create -f ProfileRXN_env.yaml
 conda activate ProfileRXN
 pip install -e .
 ```
-This step might take some time.
+Setting up the environment might take some time.
 
 ### 2. Installing QCFractal and geomeTRIC
 

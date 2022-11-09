@@ -24,6 +24,11 @@ def check_record(record):
             "Failed task detected. See the printed error message above."
         )
 
+def write_output(filename, dir, str):
+    if not os.path.exists(dir):
+        os.makedirs(dir)
+    with open(os.path.join(dir, "%s" %filename), "w") as f:
+        f.write(str)
 
 class ProfileRXN:
     def __init__(self, params):
@@ -63,7 +68,7 @@ class ProfileRXN:
             % (self.sp_spec["method"], self.sp_spec["basis"])
         )
         sp_spec = copy.copy(self.sp_spec)
-        opt_spec = {"program": "geometric", "qc_specification": sp_spec}
+        opt_spec = {"program": "geometric", "keywords": {}, "qc_specification": sp_spec}
 
         reac = qcel(
             symbols=self.elem,
@@ -83,14 +88,13 @@ class ProfileRXN:
         opt_recs = self.client.get_optimizations(ids)
         self.opt_dir = os.path.join(self.dir, "optimization_records")
 
-        if not os.path.exists(self.opt_dir):
-            os.makedirs(self.opt_dir)
 
         for i, rec in enumerate(opt_recs):
             check_record(rec)
-            opt_output = open(os.path.join(self.opt_dir, "optimization_%i.out" %i), "w")
-            opt_output.write(rec.stdout)
-            opt_output.close()
+            write_output("optimization_%i.out" %i, self.opt_dir, rec.stdout)
+            #opt_output = open(os.path.join(self.opt_dir, "optimization_%i.out" %i), "w")
+            #opt_output.write(rec.stdout)
+            #opt_output.close()
 
 
         M.xyzs[0] = np.round(opt_recs[0].final_molecule.geometry / ang2bohr, 8)
@@ -98,6 +102,8 @@ class ProfileRXN:
 
         self.R_Energy = opt_recs[0].energies[-1]
         self.P_Energy = opt_recs[-1].energies[-1]
+        if np.isclose(self.P_Energy, self.R_Energy, atol = 1e-06):
+            print("WARNING: Optimized product and reactant have really close energies. It is possible that they converged to the same local minima.")
         # Coordinates in Angstrom
         M.build_topology()
         self.M = M
@@ -361,8 +367,9 @@ class ProfileRXN:
             indent=4,
         )
 
-        with open(os.path.join(result_dir, "final_energies.json"), "w") as f:
-            f.write(final_result_json)
+        write_output("final_energies.json", result_dir, final_result_json)
+        #with open(os.path.join(result_dir, "final_energies.json"), "w") as f:
+        #    f.write(final_result_json)
 
         self.M.comms = [
             "energy: %.14f calculated by %s" % (self.R_Energy, self.params.engine),
