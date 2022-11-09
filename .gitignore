@@ -73,3 +73,5 @@ test_generated_files/
 
 # queuing system logs
 slurm*.out
+
+timer.dat

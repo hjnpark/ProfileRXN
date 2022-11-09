@@ -1,4 +1,4 @@
-import os, sys, copy
+import os, sys, copy, pprint
 from .params import Params, parse_args
 import numpy as np
 from geometric.molecule import Molecule
@@ -19,7 +19,7 @@ def check_record(record):
     status = record.status.split(".")[-1]
     if status != "complete":
         print(record)
-        print(record.error)
+        pprint.pprint(record.error)
         raise RuntimeError(
             "Failed task detected. See the printed error message above."
         )
